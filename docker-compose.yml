@@ -10,27 +10,8 @@ services:
       - "3000:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=postgres;Database=nad_1;Username=nad;Password=anhdung2004;
+      - ConnectionStrings__DefaultConnection=Host=172.104.170.224;Database=nad_1;Username=nad;Password=anhdung2004;
     restart: always
-    depends_on:
-      - postgres
-    networks:
-      - fastfood-network
-
-  postgres:
-    image: postgres:16
-    container_name: fastfood-postgres
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=nad
-      - POSTGRES_PASSWORD=anhdung2004
-      - POSTGRES_DB=nad_1
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: always
-    networks:
-      - fastfood-network
 
 volumes:
   postgres_data:
