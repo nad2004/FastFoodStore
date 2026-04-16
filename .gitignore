@@ -1,0 +1,61 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+*.sln.iml
+*.vcxproj.filters
+
+# Build results
+bin/
+obj/
+debug/
+release/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Entity Framework
+*.db
+*.db-shm
+*.db-wal
+Migrations/
+
+# Logs
+logs/
+*.log
+
+# Environment files
+appsettings.Development.json
+appsettings.Staging.json
+appsettings.Production.json
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Coverage
+coverage/
+*.opencover.xml
+
+# Misc
+.editorconfig
+.gitattributes
