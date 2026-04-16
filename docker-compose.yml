@@ -1,36 +1,39 @@
 version: '3.8'
 
 services:
-  api:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: fastfood-store-api
     ports:
-      - "5000:80"
+      - "3000:80"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=FastFoodStoreDb;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=nad_1;Username=nad;Password=anhdung2004;
+    restart: always
     depends_on:
-      - sqlserver
+      - postgres
     networks:
       - fastfood-network
 
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: fastfood-sqlserver
+  postgres:
+    image: postgres:16
+    container_name: fastfood-postgres
     ports:
-      - "1433:1433"
+      - "5432:5432"
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=YourPassword123!
+      - POSTGRES_USER=nad
+      - POSTGRES_PASSWORD=anhdung2004
+      - POSTGRES_DB=nad_1
     volumes:
-      - sqlserver_data:/var/opt/mssql
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
     networks:
       - fastfood-network
 
 volumes:
-  sqlserver_data:
+  postgres_data:
 
 networks:
   fastfood-network:

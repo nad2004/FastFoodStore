@@ -19,7 +19,7 @@ namespace Infrastructure
         {
             // Add DbContext
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
             // Add repositories here as they are created
             // services.AddScoped<IOrderRepository, OrderRepository>();
