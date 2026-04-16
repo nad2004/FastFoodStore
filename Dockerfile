@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY ["Api/Api.csproj", "Api/"]
@@ -9,15 +9,11 @@ COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 RUN dotnet restore "Api/Api.csproj"
 
 COPY . .
+WORKDIR "/src/Api"
+RUN dotnet build "Api.csproj" -c Release -o /app/build
+RUN dotnet publish "Api.csproj" -c Release -o /app/publish
 
-RUN dotnet build "Api/Api.csproj" -c Release -o /app/build
-
-FROM build AS publish
-RUN dotnet publish "Api/Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "Api.dll"]
