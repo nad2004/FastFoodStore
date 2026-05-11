@@ -1,35 +1,36 @@
-# FastFood Store API
+# FastFood Store Management System (WinForms)
 
-A RESTful API for FastFood Store Management System built with Clean Architecture and .NET 7.
+A Desktop Application for FastFood Store Management built with Clean Architecture and .NET 8 WinForms.
 
 ## Project Structure
 
 ```
-FastFood.Store.Api/
+FastFood.Store.sln
 ├── Domain/              # Core business entities and domain logic
 ├── Infrastructure/      # Data access, EF Core, repositories
 ├── Application/         # Business logic, services, DTOs
-├── Api/                 # ASP.NET Core controllers, middleware
-├── Dockerfile
-├── docker-compose.yml
-└── .gitignore
+├── WinFormsApp.csproj   # WinForms presentation layer
+├── Form1.cs             # Main Form
+├── Program.cs           # Entry point
+├── Dockerfile           # (Optional) For building the application
+└── docker-compose.yml   # (Optional) For database/infrastructure
 ```
 
 ## Prerequisites
 
-- .NET 7.0 SDK or later
-- SQL Server 2019 or later (or SQL Server Express)
-- Visual Studio 2022 or VS Code (optional)
+- .NET 8.0 SDK or later
+- SQL Server or PostgreSQL (depending on configuration)
+- Visual Studio 2022 (recommended for WinForms Designer)
 
 ## Getting Started
 
 ### 1. Configure Connection String
 
-Edit `Api/appsettings.Development.json` and add your SQL Server connection string:
+Edit `appsettings.json` (or `appsettings.Development.json`) and add your database connection string:
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=YOUR_SERVER;Database=FastFoodStoreDb;User Id=sa;Password=YOUR_PASSWORD;TrustServerCertificate=true;"
+  "DefaultConnection": "Host=localhost;Database=FastFoodStoreDb;Username=postgres;Password=your_password;"
 }
 ```
 
@@ -38,41 +39,14 @@ Edit `Api/appsettings.Development.json` and add your SQL Server connection strin
 Run migrations to create the database:
 
 ```bash
-cd Api
-dotnet ef database update --project ../Infrastructure --startup-project .
-```
-
-Or if you prefer to use Package Manager Console in Visual Studio:
-
-```
-Update-Database -Project Infrastructure -StartupProject Api
+dotnet ef database update --project Infrastructure --startup-project .
 ```
 
 ### 3. Run the Application
 
 ```bash
-cd Api
 dotnet run
 ```
-
-The API will be available at `https://localhost:5001` with Swagger documentation at `https://localhost:5001/swagger`
-
-## Using Docker
-
-### Build and Run with Docker Compose
-
-```bash
-docker-compose up --build
-```
-
-- API will be available at `http://localhost:5000`
-- SQL Server will be available at `localhost:1433`
-
-**Note:** Update the connection string password in `docker-compose.yml` before running.
-
-## API Documentation
-
-Once running, visit `/swagger` to see the API documentation and test endpoints.
 
 ## Project Layers
 
@@ -93,22 +67,19 @@ Once running, visit `/swagger` to see the API documentation and test endpoints.
 - AutoMapper configurations
 - Service interfaces
 
-### API Layer
-- ASP.NET Core controllers
-- HTTP request/response handling
-- Authentication and authorization
-- Middleware configuration
+### WinForms Presentation Layer
+- Windows Forms UI
+- Dependency Injection configuration in `Program.cs`
+- Form logic and event handling
 
 ## Key Features
 
 - ✅ Clean Architecture
+- ✅ WinForms (.NET 8)
 - ✅ Entity Framework Core
-- ✅ AutoMapper
-- ✅ Serilog logging
-- ✅ Swagger/OpenAPI
-- ✅ CORS support
 - ✅ Dependency Injection
-- ✅ Docker support
+- ✅ Serilog logging
+- ✅ Responsive UI (using WinForms layouts)
 
 ## Database Schema
 
@@ -126,23 +97,10 @@ Once running, visit `/swagger` to see the API documentation and test endpoints.
 
 1. Create entity in `Domain/Entities/`
 2. Create DTO in `Application/DTOs/`
-3. Create repository interface/implementation
-4. Create service interface/implementation
-5. Add controller with endpoints
-6. Create database migration
-
-### Database Migrations
-
-```bash
-# Create migration
-dotnet ef migrations add MigrationName --project Infrastructure --startup-project Api
-
-# Update database
-dotnet ef database update --project Infrastructure --startup-project Api
-
-# Remove last migration
-dotnet ef migrations remove --project Infrastructure --startup-project Api
-```
+3. Create repository interface/implementation in `Infrastructure`
+4. Create service interface/implementation in `Application`
+5. Create/Update WinForms in `WinFormsApp`
+6. Create database migration if needed
 
 ## Building for Production
 
@@ -154,7 +112,3 @@ dotnet publish -c Release -o ./publish
 ## Contributing
 
 Please follow the coding conventions and architecture rules outlined in the documentation.
-
-## License
-
-This project is part of the BTL assignment for .NET development.

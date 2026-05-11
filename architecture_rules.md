@@ -1,51 +1,55 @@
-# Clean Architecture Rules & Guidelines
+# WinForms Application Architecture Rules & Guidelines
 
-This document outlines the architectural rules and responsibilities for the `CMCDTQG.ADMIN.API` solution.
+This document outlines the architectural rules and responsibilities for the `FastFood.Store` WinForms solution.
 
 ## 1. The Dependency Rule
-The overriding rule in Clean Architecture is that **source code dependencies must point inwards**. 
-- The **Domain** layer knows nothing about any other layer. It has no external dependencies.
-- The **Application** layer depends only on the **Domain** layer.
-- The **Infrastructure** and **Api** (Presentation) layers depend on the **Application** and **Domain** layers.
-- The **Api** layer should **never** directly reference the **Infrastructure** layer (except for configuring Dependency Injection in `Program.cs`, which should be minimized using DI extension methods located in Infrastructure).
+The overriding rule is that **source code dependencies must point inwards**. 
+- The **Domain** layer is the core and knows nothing about any other layer.
+- The **Application** layer contains business logic and depends only on Domain.
+- The **WinForms (Root)** layer and **Infrastructure** layer are the outermost layers.
+- In this WinForms setup, the UI layer interacts directly with **Application Services** or **Infrastructure Repositories** via Dependency Injection.
 
 ---
 
 ## 2. Layer Responsibilities
 
 ### 2.1 Domain Layer (`Domain`)
-This is the core of the system. It contains the business and behavioral rules.
-- **Entities**: Business objects with a unique identity (e.g., `User`, `Document`).
-- **Value Objects**: Immutable objects that are defined by their attributes rather than an identity.
-- **Enums**: Strongly-typed enumerations defining business states or types.
-- **Constants**: Application-wide static business values.
-- **Rule**: NO external dependencies. Do not reference Entity Framework, ASP.NET Core, or any third-party frameworks here.
+The core business logic and entities.
+- **Entities**: Objects like `Order`, `MenuItem`, `Customer`.
+- **Enums/Constants**: Business-related types and static values.
+- **Rule**: No dependencies on UI frameworks or Database technologies.
 
 ### 2.2 Application Layer (`Application`)
-This layer coordinates the application's use cases and handles the business flow.
-- **Interfaces**: Defines contracts for repositories (`IRepository`), external services (`IEmailService`), etc.
-- **Services/Use Cases**: Contains the core logic that manipulates Domain entities.
-- **DTOs (Data Transfer Objects)**: Objects used to transfer data between layers, keeping Domain entities isolated from the presentation.
-- **Mappers**: Logic to map between Entities and DTOs.
-- **Rule**: Depends ONLY on the Domain layer. It should not contain any SQL, HTTP calls, or file system interactions. It defines *what* is needed (via Interfaces), not *how* it's implemented.
+The "Brain" of the application that coordinates tasks.
+- **Services**: Classes that handle business operations (e.g., `OrderService.PlaceOrder()`).
+- **DTOs**: Data structures used to pass data to and from the UI.
+- **Rule**: Contains the "What to do" logic. It should not know about Windows Forms or specific database SQL.
 
 ### 2.3 Infrastructure Layer (`Infrastructure`)
-This layer implements the interfaces defined in the Application layer.
-- **Persistence**: Contains the `AppDbContext`, EF Core Configurations, and Migrations.
-- **Repositories**: Implements the `IRepository` interfaces defined in the Application layer, performing actual database queries.
-- **External Services**: Integrations with external APIs (e.g., Minio, Email providers).
-- **Rule**: This is where technology-specific code lives. If you change the database provider, only this layer should be modified.
+The technical implementation details.
+- **Persistence**: `AppDbContext`, EF Core migrations.
+- **Repositories**: Direct data access logic (SQL/EF Core).
+- **Rule**: Handles *how* data is stored and retrieved.
 
-### 2.4 API / Presentation Layer (`Api`)
-The entry point of the application.
-- **Controllers**: Responsible for receiving HTTP requests, validating input formats, routing to the Application layer, and returning correct HTTP responses (200, 400, 404, 500).
-- **Filters/Middleware**: Global exception handling, authentication/authorization filters.
-- **Program.cs**: Application startup, middleware pipeline configuration, and Dependency Injection bootstrapping.
-- **Rule**: Controllers should be "thin". They should not contain business rules or direct database access. They simply translate HTTP requests into Application layer calls.
+### 2.4 WinForms / Presentation Layer (Root)
+The user interface and entry point.
+- **Forms/Controls**: Handle user input, button clicks, and data display.
+- **Program.cs**: Bootstraps the application, configures Dependency Injection (DI), and starts the main form.
+- **Logic**: UI logic should only handle validation of input formats and calling the appropriate service/function. It should NOT contain complex business rules or raw SQL queries.
 
 ---
 
-## 3. General Architectural Best Practices
-- **Fail Fast**: Validate incoming data as early as possible in the Application or API layer.
-- **Separation of Concerns**: Keep files small and focused on a single responsibility (Single Responsibility Principle).
-- **Dependency Injection**: Rely heavily on interfaces and constructor injection. Avoid service locator patterns and static classes for business logic.
+## 3. WinForms Specific Best Practices
+
+- **Dependency Injection**: Always use constructor injection for Forms. All services and repositories should be registered in `Program.cs`.
+- **Event Handling**: Keep event handlers small. Delegate complex work to the Application layer.
+- **Async/Await**: Use asynchronous calls for database or long-running operations to keep the UI responsive (avoid freezing the window).
+- **Thread Safety**: Ensure UI updates from background tasks are performed on the UI thread (using `Invoke` if necessary).
+- **Separation of Concerns**: Don't put business logic inside `button_Click` methods. Move it to a Service class.
+
+---
+
+## 4. Database Interaction
+Since there is no Web API, the WinForms application communicates directly with the database via the Infrastructure layer.
+- **Direct Calls**: The Form calls an injected Service or Repository.
+- **DataContext Lifecycle**: The `AppDbContext` is typically scoped per operation or short-lived to avoid memory issues in a long-running desktop app.
