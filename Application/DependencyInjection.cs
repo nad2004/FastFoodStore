@@ -1,26 +1,29 @@
-using AutoMapper;
+using Application.Interfaces;
+using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Application
+namespace Application;
+
+/// <summary>
+/// Dependency Injection extension methods for Application layer
+/// </summary>
+public static class DependencyInjection
 {
     /// <summary>
-    /// Dependency Injection extension methods for Application layer
+    /// Đăng ký tất cả Service của Application layer
     /// </summary>
-    public static class DependencyInjection
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        /// <summary>
-        /// Configures application services including AutoMapper
-        /// </summary>
-        public static IServiceCollection AddApplication(this IServiceCollection services)
-        {
-            // Register AutoMapper
-            services.AddAutoMapper(typeof(DependencyInjection));
+        services.AddTransient<KhachHangService>();
+        services.AddTransient<MonAnService>();
+        services.AddTransient<HoaDonService>();
+        services.AddTransient<DatMonService>();
+        services.AddTransient<KhoService>();
+        services.AddTransient<NhanVienService>();
+        services.AddTransient<ThucDonService>();
+        services.AddTransient<DoanhThuService>();
+        services.AddTransient<AuthService>();
 
-            // Add application services here as they are created
-            // services.AddScoped<IOrderService, OrderService>();
-            // services.AddScoped<IMenuItemService, MenuItemService>();
-
-            return services;
-        }
+        return services;
     }
 }
